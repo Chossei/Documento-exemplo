@@ -28,6 +28,7 @@ header-includes:
 if(!require(readxl)) {install.packages("readxl")}
 if(!require(knitr)) {install.packages("knitr")}
 if(!require(dplyr)) {install.packages("dplyr")}
+
 library(readxl) # carrega data frames
 library(knitr) # gera tabelas compatíveis com LaTeX
 library(dplyr) # sumariza v.a quantitativa em função de v.a qualitativa
@@ -88,7 +89,6 @@ boxplot(compras_online$idade, main = "Boxplot: idade dos clientes", col = "light
 #| echo: false
 #| tbl-cap: "Método de pagamento por uso de voucher"
 #| tbl-cap-location: top
-library(knitr)
 
 tabela2 <- table(compras_online$voucher, compras_online$metodo_pagam)
 
@@ -101,6 +101,7 @@ kable(tabela2, col.names = c("Cartão", "Outros", "Paypal"))
 #| echo: false
 #| tbl-cap: "Sumário do valor da compra em função do método de pagamento"
 #| tbl-cap-location: top
+
 sumario <- compras_online |> group_by(metodo_pagam) |>
   summarise(
     "Min" = min(valor_compra),
