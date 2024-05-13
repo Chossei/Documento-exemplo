@@ -1,0 +1,133 @@
+---
+title: "Estatística Descritiva com Quarto"
+author: "Átila Prudente Simões"
+date: "03/05/2024"
+format: pdf
+mainfont: Arial
+fontsize: 12pt
+geometry: 
+- top=3cm
+- left=3cm
+- right=2cm
+- bottom=2cm
+align: justify
+editor: visual
+header-includes:
+  - \usepackage{setspace}
+  - \setstretch{1.5}
+  - \usepackage{sectsty}
+  - \allsectionsfont{\normalfont}
+---
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| error: false
+
+if(!require(readxl)) {install.packages("readxl")}
+if(!require(knitr)) {install.packages("knitr")}
+if(!require(dplyr)) {install.packages("dplyr")}
+library(readxl) # carrega data frames
+library(knitr) # gera tabelas compatíveis com LaTeX
+library(dplyr) # sumariza v.a quantitativa em função de v.a qualitativa
+```
+
+# **Análise descritiva e exploratória de dados**
+
+Esse é um ***exemplo*** de documento para análises dos dados.
+
+## **Análise Univariada**
+
+### - *Variáveis qualitativas*
+
+```{r}
+#| echo: false
+#| tbl-cap: "Frequências da variável sexo"
+#| tbl-cap-location: top
+
+compras_online <- read_excel("D:/PENDRIVE - ÁTILA/UFBA/Monitoria/Atila/script e documentos quarto/compras_online.xlsx")
+
+# Usando a função "kable" do pacote knitr para formatar a tabela em LaTeX
+tabela <- table(compras_online$sexo)
+
+# col. names renomeia ordenamente as colunas, se indicadas concatenadas
+kable(tabela, col.names = c("Sexo", "Frequência")) 
+```
+
+```{r}
+#| echo: false
+#| fig-align: center
+
+barplot(table(compras_online$voucher), main = "Gráfico de colunas para a variável voucher", col = "lightblue", horiz = TRUE)
+```
+
+### - *Variável quantitativa*
+
+```{r}
+#| echo: false
+#| fig-align: center
+
+summary(compras_online$idade)
+```
+
+```{r}
+#| echo: false
+#| fig-width: 3.2
+#| fig-height: 3.2
+#| fig-align: center
+
+boxplot(compras_online$idade, main = "Boxplot: idade dos clientes", col = "lightblue")
+```
+
+## **Análise Bivariada**
+
+### *Qualitativa com qualitativa*
+
+```{r}
+#| echo: false
+#| tbl-cap: "Método de pagamento por uso de voucher"
+#| tbl-cap-location: top
+library(knitr)
+
+tabela2 <- table(compras_online$voucher, compras_online$metodo_pagam)
+
+kable(tabela2, col.names = c("Cartão", "Outros", "Paypal"))
+```
+
+### *Quantitativa com qualitativa*
+
+```{r}
+#| echo: false
+#| tbl-cap: "Sumário do valor da compra em função do método de pagamento"
+#| tbl-cap-location: top
+sumario <- compras_online |> group_by(metodo_pagam) |>
+  summarise(
+    "Min" = min(valor_compra),
+    "1st Qu." = quantile(valor_compra, probs = 0.25),
+    "Median" = median(valor_compra),
+    "Mean" = mean(valor_compra),
+    "3rd Qu." = quantile(valor_compra, probs = 0.75),
+    "Max" = max(valor_compra)
+  )
+
+kable(sumario, col.names = c("Método de Pagamento",
+                             "Mínimo", "1° Quantil",
+                             "Mediana", "Média",
+                             "3° Quantil", "Máximo"))
+```
+
+### *Quantitativa com quantitativa*
+
+Correlação linear:
+
+```{r}
+#| echo: false
+
+# Correlação linear
+cor(compras_online$tempoGasto_seg, compras_online$num_compras)
+
+# Diagrama de dispersão
+plot(compras_online$num_compras, compras_online$tempoGasto_seg,main ="Diagrama de Dispersão", xlab ="Número de compras", ylab ="Tempo gasto, em segundos")
+
+```
